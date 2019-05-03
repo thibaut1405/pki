@@ -1,0 +1,63 @@
+#!/bin/bash
+
+#
+# Please, check for ./conf/ssl-default.cnf for default values.
+#
+
+
+checkInput() {
+  #### Checking input structure:
+  if [[ ! $1 ]]; then
+    echo -e "\nUsage $0 [-w] <fqdn>\nwhere -w (optional) means a wildcard cert for a <fqdn> domain.\n"
+    exit 1
+  fi
+  file=$2
+  fqdn=$1
+  HOMEDIR=/root/pki
+  CADIR=$HOMEDIR/CA
+}
+
+
+
+createStructure() {
+  #### Creating directory structure:
+  if [[ -d $HOMEDIR/certs/$fqdn ]]; then
+    echo "Directory $HOMEDIR/certs/$fqdn exists and can contain important files. Please verify. Exiting."
+    exit -1
+  fi
+  
+  mkdir -p $CADIR/certs/$fqdn
+  cd $CADIR/certs/$fqdn
+}
+
+copyCsr() {
+  #### Copy CSR file
+  cp /var/www/html/request/$file  $CADIR/certs/$fqdn/$fqdn.csr
+  echo "fichié déplacé"
+}
+
+
+createVerify() {
+  #### Creates verification tool for csr and keys:
+  CHECKFILE=$CADIR/certs/$fqdn/checkCSR
+  echo -e "#!/bin/bash\n\n" >> $CHECKFILE
+  echo -e "openssl req -noout -text -in $CADIR/certs/$fqdn/$fqdn.csr | less\nexit 0" >> $CHECKFILE
+
+  chmod +x $CHECKFILE
+
+  CHECKFILE=$CADIR/certs/$fqdn/checkKey
+  echo -e "#!/bin/bash\n\n" >> $CHECKFILE
+  echo -e "openssl rsa -noout -text -in $CADIR/certs/$fqdn/$fqdn.key | less\nexit 0" >> $CHECKFILE
+
+  chmod +x $CHECKFILE
+}
+
+main() {
+  checkInput $1 $2
+  createStructure
+  copyCsr
+  exit 0
+}
+
+####
+main $1 $2
