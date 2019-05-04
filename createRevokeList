@@ -1,0 +1,39 @@
+#/bin/bash
+
+createRevokeList() {
+  if [[ ! -d $CADIR/crl ]]; then
+    mkdir -p $CADIR/crl
+  fi
+
+  if [[ ! -f $CADIR/crlnumber ]]; then
+    echo "00" > $CADIR/crlnumber  ### Initialize it with 1.
+  fi
+
+  if [[ ! -f $CADIR/index.txt ]]; then
+    touch $CADIR/index.txt
+  fi
+
+  if [[ ! -f $CADIR/index.txt.attr ]]; then
+    touch $CADIR/index.txt.attr
+  fi
+
+  #### Creates the Certificate Revoke List:
+  openssl ca \
+          -gencrl \
+          -keyfile $CADIR/private/cakey.pem \
+          -config $HOMEDIR/conf/ca-ssl-default.conf \
+          -out $CADIR/crl/ca.crl
+}
+
+main() {
+
+  HOMEDIR=/root/pki
+  CADIR=$HOMEDIR/CA
+  
+  createRevokeList
+  exit 0
+}
+
+####
+main
+

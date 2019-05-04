@@ -14,23 +14,24 @@ HOMEDIR=/root/pki
 CADIR=$HOMEDIR/CA
 
 CERTFILE=$1
+fqdn=$2
 }
 
 revoke() {
 openssl ca \
-        -config $HOMEDIR/conf/ca-ssl-default.conf \
-        -revoke $CERTFILE 
+        -config $HOMEDIR/conf/ssl-default.conf \
+        -revoke $CADIR/certs/$fqdn/$CERTFILE
 
 #### Generate a new crl file:
 openssl ca \
         -gencrl \
         -keyfile $HOMEDIR/CA/private/cakey.pem \
         -cert $HOMEDIR/CA/cacert.pem \
-        -config $HOMEDIR/conf/ca-ssl-default.conf \
+        -config $HOMEDIR/conf/ssl-default.conf \
         -out $CADIR/crl/ca.crl
 
-echo 
-echo "Please check at $CADIR/crl/ca.crl for the Certificate Revoke List."
+echo
+echo "Please check at $CADIR/index.txt for the Certificate Revoke List."
 echo
 
 }
@@ -42,4 +43,4 @@ main() {
 }
 
 ####
-main $1
+main $1 $2

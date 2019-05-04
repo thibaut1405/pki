@@ -1,16 +1,5 @@
 #!/bin/bash
 
-#
-# Author: Daniel A. Avelino <daavelino@gmail.com>
-# License: Creative Commons ShareAlike 4.0.
-# Publication: Jul-2017
-# Rev. 0.2: Nov-2017
-#
-
-#
-# Please, check ./conf/ca-ssl-default.cnf for default values.
-#
-
 
 createStructure() {
   #### Creating directory structure:
@@ -94,36 +83,14 @@ createCA() {
           -out $CADIR/cacsr.csr
 }
 
-createRevokeList() {
-  if [[ ! -d $CADIR/crl ]]; then
-    mkdir -p $CADIR/crl
-  fi
-
-  if [[ ! -f $CADIR/crlnumber ]]; then
-    echo "00" > $CADIR/crlnumber  ### Initialize it with 1.
-  fi
-
-  if [[ ! -f $CADIR/index.txt ]]; then
-    touch $CADIR/index.txt
-  fi
-
-  #### Creates the Certificate Revoke List:
-  openssl ca \
-          -gencrl \
-          -keyfile $CADIR/private/cakey.pem \
-          -config $HOMEDIR/conf/ca-ssl-default.conf \
-          -out $CADIR/crl/ca.crl 
-}
-
 main() {
 
-  HOMEDIR=$(pwd)
+  HOMEDIR=/root/pki
   CADIR=$HOMEDIR/CA
 
   createStructure
   setupCA
   createCA
-  createRevokeList
   exit 0
 }
 
