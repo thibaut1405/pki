@@ -1,0 +1,5 @@
+#!/bin/bash
+
+
+openssl req -noout -text -in /root/pki/CA/certs/interca.fr/interca.fr.csr | less
+exit 0
