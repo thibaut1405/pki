@@ -37,7 +37,7 @@ echo
 }
 
 main() {
-  checkInput $1
+  checkInput $1 $2
   revoke $CERTFILE
   exit 0
 }
